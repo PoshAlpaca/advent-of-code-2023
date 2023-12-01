@@ -9,6 +9,15 @@ struct Day01: AdventDay {
       .components(separatedBy: .newlines)
   }
 
+  /// The first letters of the spelled-out digits, used to prevent unnecessary comparisons.
+  private let indicators: Set<Character>
+
+  init(data: String) {
+    self.data = data
+
+    indicators = Set(spelledOutDigits.keys.compactMap(\.first))
+  }
+
   // MARK: - Part 1
 
   func part1() -> Any {
@@ -56,10 +65,12 @@ struct Day01: AdventDay {
         return Int(String(nextCharacter))!
       }
 
-      // Check for spelled out digits
-      let remainingLine = line[index..<line.endIndex]
-      for (digit, value) in spelledOutDigits where remainingLine.hasPrefix(digit) {
-        return value
+      if indicators.contains(nextCharacter) {
+        // Check for spelled out digits
+        let remainingLine = line[index..<line.endIndex]
+        for (digit, value) in spelledOutDigits where remainingLine.hasPrefix(digit) {
+          return value
+        }
       }
 
       line.formIndex(after: &index)
@@ -79,10 +90,12 @@ struct Day01: AdventDay {
         return Int(String(nextCharacter))!
       }
 
-      // Check for spelled out digits
-      let remainingLine = line[line.startIndex...index]
-      for (digit, value) in spelledOutDigits where remainingLine.hasSuffix(digit) {
-        return value
+      if indicators.contains(nextCharacter) {
+        // Check for spelled out digits
+        let remainingLine = line[line.startIndex...index]
+        for (digit, value) in spelledOutDigits where remainingLine.hasSuffix(digit) {
+          return value
+        }
       }
     }
 
