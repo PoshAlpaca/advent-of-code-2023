@@ -51,18 +51,6 @@ struct Day03: AdventDay {
   func part1() -> Any {
     var foundNumbers: Set<FoundNumber> = []
 
-    let x = """
-      467..114..
-      ...*......
-      ..35..633.
-      """
-
-    let y = """
-      ..7$.114..
-      ...*7.....
-      ..35..633.
-      """
-
     var previousLine: [(range: ClosedRange<Int>, token: Token)] = []
     var currentLine: [(range: ClosedRange<Int>, token: Token)] = []
     var line = 0
@@ -106,12 +94,6 @@ struct Day03: AdventDay {
         for (range, token) in currentLine where token.isSymbol {
           foundNumbers.formUnion(previousLine.numbers(closeTo: range, line: line - 1))
         }
-//        print("current line:", currentLine.compactMap(\.token.number))
-//        print(currentLine)
-
-        let adjacent = currentLine.numbersAdjacentToSymbols(line: line - 1)
-//        print("adjacent:", adjacent)
-
 
         previousLine = currentLine
         currentLine = []
@@ -130,8 +112,160 @@ struct Day03: AdventDay {
   // MARK: - Part 2
 
   func part2() -> Any {
-    "Todo"
+    var foundNumbers: Set<FoundNumber> = []
+
+    var previousLine: [(range: ClosedRange<Int>, token: Token)] = []
+    var currentLine: [(range: ClosedRange<Int>, token: Token)] = []
+    var line = 0
+    var index = 0
+
+    var currentNumber: Int {
+      get {
+        if let last = currentLine.last, last.range.upperBound == index - 1, case let .number(value) = last.token {
+          return value
+        } else {
+          return 0
+        }
+      }
+      set {
+        if let last = currentLine.last, last.range.upperBound == index - 1, case .number = last.token {
+          let lastIndex = currentLine.index(before: currentLine.endIndex)
+          let updatedRange = (last.range.lowerBound...index)
+          currentLine[lastIndex] = (updatedRange, .number(value: newValue))
+        } else {
+          currentLine.append((index...index, .number(value: newValue)))
+        }
+      }
+    }
+
+    print(Set(data).map { ($0, $0.isNumber || $0.isSymbol || $0.isPunctuation || $0.isNewline)})
+
+    var foundGears: [(line: Int, index: Int)] = []
+
+    for char in data {
+      if char.isNumber {
+        currentNumber = currentNumber * 10 + Int(String(char))!
+      } else if char != ".", char.isSymbol || char.isPunctuation {
+        if char == "*" {
+          foundGears.append((line, index))
+        }
+        currentLine.append((index...index, .symbol))
+      } else if char == "\n" {
+        foundNumbers.formUnion(previousLine.numbersAdjacentToSymbols(line: line - 1))
+
+        for (range, token) in previousLine where token.isSymbol {
+          foundNumbers.formUnion(currentLine.numbers(closeTo: range, line: line))
+        }
+
+        for (range, token) in currentLine where token.isSymbol {
+          foundNumbers.formUnion(previousLine.numbers(closeTo: range, line: line - 1))
+        }
+        line += 1
+        index = 0
+
+        previousLine = currentLine
+        currentLine = []
+        continue
+      }
+
+
+      index += 1
+    }
+
+    var sum = 0
+    var numbers: [Int] = []
+//    print(foundGears)
+//    print(foundNumbers)
+    for gear in foundGears {
+      for number in foundNumbers {
+        if ((gear.line - 1)...(gear.line + 1)).contains(number.line), number.range.extended(by: 1).contains(gear.index) {
+          numbers.append(number.number)
+        }
+      }
+//      print("numbers", numbers)
+      if numbers.count == 2 {
+//        print("found gear numbers", numbers)
+        sum += numbers[0] * numbers[1]
+      }
+      numbers = []
+    }
+
+    return sum
   }
+
+//  func part2() -> Any {
+//    // [lineNumber: [number]]
+//    var numbers: [Int: [RecordedNumber]] = [:]
+//    var symbols: [Int: [RecordedSymbol]] = [:]
+//
+//    var line = 0
+//    var index = 0
+//    var previousLineSymbols: [RecordedSymbol] = []
+//    var currentLineSymbols: [RecordedSymbol] = []
+//
+//    for char in data {
+//      if char.isNumber {
+//        let charValue = Int(String(char))!
+//        if var currentNumber = numbers[line, default: [:]][index - 1] {
+//          currentNumber.value = currentNumber.value * 10 + charValue
+//          numbers[line]
+//        } else {
+//          numbers[line, default: [:]][index] = RecordedNumber(value: charValue, range: index...index, symbols: [])
+//        }
+//      } else if char != ".", char.isSymbol || char.isPunctuation {
+//        currentLineSymbols.append(RecordedSymbol(value: char, index: index))
+//      } else if char == "\n" {
+//        line += 1
+//        index = 0
+//
+//        // also record symbols from previous lines
+//        for symbol in previousLineSymbols {
+//          for (lastKnownIndex, recordedNumber) in numbers[line, default: [:]] {
+//            if recordedNumber.range.extended(by: 1).contains(symbol.index) {
+//              numbers[line, default: [:]][lastKnownIndex]?.symbols.append(symbol)
+//            }
+//          }
+//        }
+//
+//        previousLineSymbols = currentLineSymbols
+//        currentLineSymbols = []
+//      }
+//    }
+//
+//
+//    let sum = numbers.flatMap {
+//      $0.value.compactMap {
+//        if $0.value.symbols.contains(where: { $0.value == "*" }) {
+//          return $0.value.value
+//        }
+//        return nil
+//      }
+//    }
+//    .reduce(0, +)
+//
+//    for (line, rest) in numbers {
+//      for (lastKnownIndex, recordedNumber) in rest {
+//        if recordedNumber.symbols.contains(where: { $0.value == "*" })
+//        for (key, value) in numbers[line - 1, default: [:]] {
+//          value.symbols
+//        }
+//      }
+//    }
+//
+//    return sum
+//  }
+}
+
+
+struct RecordedNumber {
+  var value: Int
+  var range: ClosedRange<Int>
+  var symbols: [RecordedSymbol]
+}
+
+struct RecordedSymbol {
+  let value: Character
+  let index: Int
 }
 
 extension Day03 {
