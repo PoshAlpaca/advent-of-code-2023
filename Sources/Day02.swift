@@ -55,12 +55,7 @@ struct Day02: AdventDay {
     for line in lines {
       let x = line.components(separatedBy: ":")
       guard x.count == 2 else { return "Wrong" }
-      let game = x[0]
       let cubeSets = x[1]
-
-      let gameComponents = game.components(separatedBy: " ")
-      guard gameComponents.count == 2 else { return "Wrong" }
-      let gameID = Int(gameComponents[1])!
 
       let y = cubeSets.components(separatedBy: ";")
 
