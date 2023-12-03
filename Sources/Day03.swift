@@ -5,49 +5,6 @@ struct Day03: AdventDay {
 
   // MARK: - Part 1
 
-//  func xx() -> Any {
-//    var sum = 0
-//
-//    var currentNumber = 0
-//    var hadSymbol = false
-//
-//    var stringIndex = data.startIndex
-//    while stringIndex < data.endIndex {
-//      let char = data[stringIndex]
-//
-//      if char.isNumber {
-//        currentNumber = currentNumber * 10 + Int(String(char))!
-//      } else if char.isSymbol {
-//        sum += currentNumber
-//        currentNumber = 0
-//        hadSymbol = true
-//      } else {
-//        currentNumber = 0
-//      }
-//
-//
-//      data.formIndex(after: &stringIndex)
-//    }
-//
-//    return sum
-//  }
-
-//  func xx() -> Any {
-//    var previousLine: [Token] = []
-//    var currentLine: [Token] = []
-//
-//    for char in data {
-//      if char.isNumber {
-//        current
-//        currentNumber = currentNumber * 10 + Int(String(char))!
-//      } else if char != ".", char.isSymbol || char.isPunctuation {
-//        currentLine.append((index...index, .symbol))
-//      }
-//    }
-//
-//    return ""
-//  }
-
   func part1() -> Any {
     var foundNumbers: Set<FoundNumber> = []
 
@@ -75,8 +32,6 @@ struct Day03: AdventDay {
       }
     }
 
-    print(Set(data).map { ($0, $0.isNumber || $0.isSymbol || $0.isPunctuation || $0.isNewline)})
-
     for char in data {
       if char.isNumber {
         currentNumber = currentNumber * 10 + Int(String(char))!
@@ -103,8 +58,6 @@ struct Day03: AdventDay {
 
       index += 1
     }
-
-//    print(foundNumbers.map(\.number))
 
     return foundNumbers.reduce(0) { $0 + $1.number }
   }
@@ -137,8 +90,6 @@ struct Day03: AdventDay {
         }
       }
     }
-
-    print(Set(data).map { ($0, $0.isNumber || $0.isSymbol || $0.isPunctuation || $0.isNewline)})
 
     var foundGears: [(line: Int, index: Int)] = []
 
@@ -174,17 +125,13 @@ struct Day03: AdventDay {
 
     var sum = 0
     var numbers: [Int] = []
-//    print(foundGears)
-//    print(foundNumbers)
     for gear in foundGears {
       for number in foundNumbers {
         if ((gear.line - 1)...(gear.line + 1)).contains(number.line), number.range.extended(by: 1).contains(gear.index) {
           numbers.append(number.number)
         }
       }
-//      print("numbers", numbers)
       if numbers.count == 2 {
-//        print("found gear numbers", numbers)
         sum += numbers[0] * numbers[1]
       }
       numbers = []
@@ -255,6 +202,8 @@ struct Day03: AdventDay {
 //    return sum
 //  }
 }
+
+
 
 
 struct RecordedNumber {
