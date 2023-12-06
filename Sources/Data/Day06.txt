@@ -1,0 +1,8 @@
+//
+//  File.swift
+//  
+//
+//  Created by Nikolai Guyot on 06.12.23.
+//
+
+import Foundation
