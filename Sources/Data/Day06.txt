@@ -1,8 +1,2 @@
-//
-//  File.swift
-//  
-//
-//  Created by Nikolai Guyot on 06.12.23.
-//
-
-import Foundation
+Time:        54     94     65     92
+Distance:   302   1476   1029   1404
