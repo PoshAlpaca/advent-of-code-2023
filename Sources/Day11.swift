@@ -14,59 +14,42 @@ struct Day11: AdventDay {
   // MARK: - Part 1
 
   func part1() -> Any {
-    var grid = grid
-    print(grid.map { $0.allSatisfy({ $0 == "." })})
-    expand(grid: &grid)
-
-    let galaxies = Array(grid.galaxyLocations.enumerated())
-
-    let galaxyPairs = galaxies.combinations(ofCount: 2)
-    let distances = galaxyPairs.map { galaxyPair -> (Int, Int, Int) in
-      let rowDiff: Int = galaxyPair[1].element.row - galaxyPair[0].element.row
-      let columnDiff: Int = galaxyPair[1].element.column - galaxyPair[0].element.column
-      let diff: Int = abs(rowDiff) + abs(columnDiff)
-
-      return (galaxyPair[0].offset + 1, galaxyPair[1].offset + 1, diff)
-    }
-
-    return distances.map(\.2).reduce(0, +)
+    shortestPathSum(expansionFactor: 2)
   }
 
   // MARK: - Part 2
 
   func part2() -> Any {
-    "Todo"
+    shortestPathSum(expansionFactor: 1_000_000)
   }
 
-  func expand(grid: inout [[Character]]) {
-    var rowsToExpand: [Int] = []
-    for rowIndex in grid.indices {
-      if grid[rowIndex].allSatisfy({ $0 == "." }) {
-        rowsToExpand.append(rowIndex)
-      }
+  // MARK: - Helpers
+
+  func shortestPathSum(expansionFactor: Int) -> Int {
+    let expansions = grid.expansions
+    let galaxies = grid.galaxyLocations.map { row, column in
+      let rowExpansions = expansions.rows.filter { $0 < row }.count
+      let columnExpansions = expansions.columns.filter { $0 < column }.count
+      return (
+        row: row + rowExpansions * (expansionFactor - 1),
+        column: column + columnExpansions * (expansionFactor - 1)
+      )
     }
 
-    while let rowIndex = rowsToExpand.popLast() {
-      grid.insert(Array(repeating: ".", count: grid[rowIndex].count), at: rowIndex)
+    var sum = 0
+    for galaxyPair in galaxies.combinations(ofCount: 2) {
+      let rowDiff = galaxyPair[1].row - galaxyPair[0].row
+      let columnDiff = galaxyPair[1].column - galaxyPair[0].column
+      let diff = abs(rowDiff) + abs(columnDiff)
+      sum += diff
     }
 
-    var columnsToExpand: [Int] = []
-    for columnIndex in grid[0].indices {
-      if grid.indices.allSatisfy({ grid[$0][columnIndex] == "." }) {
-        columnsToExpand.append(columnIndex)
-      }
-    }
-
-    while let columnIndex = columnsToExpand.popLast() {
-      for rowIndex in grid.indices {
-        grid[rowIndex].insert(".", at: columnIndex)
-      }
-    }
+    return sum
   }
 }
 
 
-extension [[Character]] {
+private extension [[Character]] {
   var galaxyLocations: [(row: Int, column: Int)] {
     var locations: [(row: Int, column: Int)] = []
     for rowIndex in self.indices {
@@ -77,5 +60,23 @@ extension [[Character]] {
       }
     }
     return locations
+  }
+
+  var expansions: (rows: [Int], columns: [Int]) {
+    var rowsToExpand: [Int] = []
+    for rowIndex in self.indices {
+      if self[rowIndex].allSatisfy({ $0 == "." }) {
+        rowsToExpand.append(rowIndex)
+      }
+    }
+
+    var columnsToExpand: [Int] = []
+    for columnIndex in self[0].indices {
+      if self.indices.allSatisfy({ self[$0][columnIndex] == "." }) {
+        columnsToExpand.append(columnIndex)
+      }
+    }
+
+    return (rowsToExpand, columnsToExpand)
   }
 }

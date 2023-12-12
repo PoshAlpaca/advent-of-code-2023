@@ -37,16 +37,14 @@ final class Day11Tests: XCTestCase {
     XCTAssertEqual(String(describing: challenge.part1()), "374")
   }
 
-  func test_expand() {
-    let challenge = Day11(data: testData)
-    var grid = challenge.grid
-    challenge.expand(grid: &grid)
-    print(grid.prettyPrinted)
-    XCTAssertEqual(grid.prettyPrinted, cosmicExpansion)
-  }
-
   func test_part2() {
     let challenge = Day11(data: testData)
-    XCTAssertEqual(String(describing: challenge.part2()), "Todo")
+    XCTAssertEqual(String(describing: challenge.part2()), "82000210")
+  }
+
+  func test_shortedPathSum() {
+    let challenge = Day11(data: testData)
+    XCTAssertEqual(challenge.shortestPathSum(expansionFactor: 10), 1030)
+    XCTAssertEqual(challenge.shortestPathSum(expansionFactor: 100), 8410)
   }
 }
